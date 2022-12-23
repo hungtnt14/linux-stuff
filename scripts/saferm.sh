@@ -28,9 +28,9 @@ norm='\e[0m'
 
 ## trashbin definitions
 # this is the same for newer KDE and GNOME:
-trash_desktops="$HOME/.local/share/Trash/files"
+trash_desktops="/trash"
 # if neither is running:
-trash_fallback="$HOME/Trash"
+trash_fallback="/trash"
 
 # use .local/share/Trash?
 use_desktop=$( ps -U $USER | grep -E "gnome-settings|startkde|mate-session|mate-settings|mate-panel|gnome-shell|lxsession|unity|xfwm4" )
