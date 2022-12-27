@@ -77,8 +77,9 @@ detect() {
 }
 
 
-trashinfo() {
-#gnome: generate trashinfo:
+trashinfo() 
+{
+	#gnome: generate trashinfo:
 	bname=$( basename -- "$1" )
     fname="${trash}/../info/${bname}.trashinfo"
     cat <<EOF > "${fname}"
@@ -88,7 +89,8 @@ DeletionDate=$( date +%Y-%m-%dT%H:%M:%S )
 EOF
 }
 
-setflags() {
+setflags() 
+{
     for k in $flaglist; do
 	reduced=$( echo "$1" | sed "s/$k//" )
 	if [ "$reduced" != "$1" ]; then
@@ -110,20 +112,22 @@ setflags() {
   done
 }
 
-performdelete() {
-			# "delete" = move to trash
-			if [ -n "$unsafe" ]
-			then
-			  if [ -n "$verbose" ];then echo -e "Deleting $red$1$norm"; fi
-		    #UNSAFE: permanently remove files.
-		    rm -rf -- "$1"
-			else
-			  if [ -n "$verbose" ];then echo -e "Moving $blue$k$norm to $red${trash}$norm"; fi
-		    mv -b -- "$1" "${trash}" # moves and backs up old files
-			fi
+performdelete() 
+{
+	# "delete" = move to trash
+	if [ -n "$unsafe" ]
+	then
+		if [ -n "$verbose" ];vthen echo -e "Deleting $red$1$norm"; fi
+	#UNSAFE: permanently remove files.
+	rm -rf -- "$1"
+	else
+		if [ -n "$verbose" ];then echo -e "Moving $blue$k$norm to $red${trash}$norm"; fi
+	mv -b -- "$1" "${trash}" # moves and backs up old files
+	fi
 }
 
-askfs() {
+askfs() 
+{
   detect "$1"
   if [ "${fs}" != "${tfs}" ]; then
     unset answer;
@@ -137,32 +141,48 @@ askfs() {
   fi
 }
 
-complain() {
+complain() 
+{
   msg=""
-  if [ ! -e "$1" -a ! -L "$1" ]; then # does not exist
-    msg="File does not exist:"
-	elif [ ! -w "$1" -a ! -L "$1" ]; then # not writable
-    msg="File is not writable:"
-	elif [ ! -f "$1" -a ! -d "$1" -a -z "$force" ]; then # Special or sth else.
+	if [ ! -e "$1" -a ! -L "$1" ]; 
+	then # does not exist
+    	msg="File does not exist:"
+	
+	elif [ ! -w "$1" -a ! -L "$1" ]; 
+	then # not writable
+    	msg="File is not writable:"
+	
+	elif [ ! -f "$1" -a ! -d "$1" -a -z "$force" ]; 
+	then # Special or sth else.
     	msg="Is not a regular file or directory (and -f not specified):"
-	elif [ -f "$1" ]; then # is a file
-    act="true" # operate on files by default
-	elif [ -d "$1" -a -n "$recursive" ]; then # is a directory and recursive is enabled
-    act="true"
-	elif [ -d "$1" -a -z "${recursive}" ]; then
+	
+	elif [ -f "$1" ]; 
+	then # is a file
+    	act="true" # operate on files by default
+	
+	elif [ -d "$1" -a -n "$recursive" ]; 
+	then # is a directory and recursive is enabled
+    	act="true"
+	
+	elif [ -d "$1" -a -z "${recursive}" ]; 
+	then
 		msg="Is a directory (and -r not specified):"
+	
 	else
 		# not file or dir. This branch should not be reached.
 		msg="No such file or directory:"
 	fi
 }
 
-asknobackup() {
+asknobackup() 
+{
   unset answer
-	until [ "$answer" == "y" -o "$answer" == "n" ]; do
+	until [ "$answer" == "y" -o "$answer" == "n" ]; 
+	do
 	  echo -e "$blue$k$norm could not be moved to trash. Unsafe delete (y/n)?"
 	  read -n 1 answer
 	done
+
 	if [ "$answer" == "y" ]
 	then
 	  unsafe="yes"
@@ -176,37 +196,48 @@ asknobackup() {
 	fi
 }
 
-deletefiles() {
-  for k in "$@"; do
+deletefiles() 
+{
+  for k in "$@"; 
+  do
 	  fdesc="$blue$k$norm";
 	  complain "${k}"
 	  if [ -n "$msg" ]
 	  then
 		  echo -e "$msg $fdesc."
-    else
+      else
     	#actual action:
-    	if [ -z "$unsafe" ]; then
+    	if [ -z "$unsafe" ]; 
+		then
     	  askfs "${k}"
     	fi
-		  performdelete "${k}"
-		  ret=$?
-		  # Reset temporary unsafe flag
-		  if [ "$answer" == "y" ]; then unset unsafe; unset answer; fi
+		performdelete "${k}"
+		ret=$?
+		# Reset temporary unsafe flag
+		
+		if [ "$answer" == "y" ]; 
+		then 
+			unset unsafe; 
+			unset answer; 
+		fi
+
       #echo "MV exit status: $ret"
-      if [ ! "$ret" -eq 0 ]
-      then 
-        asknobackup "${k}"
-      fi
-      if [ -n "$use_desktop" ]; then
-          # generate trashinfo for desktop environments
-        trashinfo "${k}"
-      fi
+        if [ ! "$ret" -eq 0 ]
+        then 
+        	asknobackup "${k}"
+        fi
+      
+	    if [ -n "$use_desktop" ]; then
+        	# generate trashinfo for desktop environments
+        	trashinfo "${k}"
+        fi
     fi
 	done
 }
 
 # Make trash if it doesn't exist
-if [ ! -d "${trash}" ]; then
+if [ ! -d "${trash}" ]; 
+then
     mkdir "${trash}";
 fi
 
