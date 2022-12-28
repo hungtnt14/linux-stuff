@@ -10,6 +10,7 @@
 ##
 
 version="1.16";
+date=`date +%Y%m%d`
 
 ## flags (change these to change default behaviour)
 recursive="" # do not recurse into directories by default
@@ -117,12 +118,32 @@ performdelete()
 	# "delete" = move to trash
 	if [ -n "$unsafe" ]
 	then
-		if [ -n "$verbose" ];vthen echo -e "Deleting $red$1$norm"; fi
-	#UNSAFE: permanently remove files.
-	rm -rf -- "$1"
+		if [ -n "$verbose" ];
+		then 
+			echo -e "Deleting $red$1$norm"; 
+		fi
+		#UNSAFE: permanently remove files.
+		rm -rf -- "$1"
+
 	else
-		if [ -n "$verbose" ];then echo -e "Moving $blue$k$norm to $red${trash}$norm"; fi
-	mv -b -- "$1" "${trash}" # moves and backs up old files
+	    # Check if today directory is exist
+		if [ ! -d "${trash}/${date}" ]; 
+		then
+			mkdir -p "${trash}/${date}" && chmod 777 -R "${trash}/${date}";
+		fi
+
+		# Check if user trash today directory is exist
+		if [ ! -d "${trash}/${date}/${USER}" ]; 
+		then
+			mkdir -p "${trash}/${date}/${USER}" && chmod 777 -R "${trash}/${date}/${USER}";
+		fi
+
+		if [ -n "$verbose" ];
+		then 
+			# echo -e "Moving $blue$k$norm to $red${trash}$norm";
+			echo -e "Moving $blue$k$norm to heaven"; 
+		fi
+		mv -b -- "$1" "${trash}/${date}/${USER}/" # moves and backs up old files
 	fi
 }
 
